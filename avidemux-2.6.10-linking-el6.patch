@@ -1,0 +1,56 @@
+Patch by Robert Scheck <robert@fedoraproject.org> for avidemux >= 2.6.10 to work around the linking failures on
+RHEL 6 (and derivates such as CentOS 6). It seems the linking failures are only happing on RHEL 6, not on newer
+versions.
+
+--- avidemux_2.6.10/avidemux/cli/CMakeLists.txt					2015-06-10 07:42:47.000000000 +0200
++++ avidemux_2.6.10/avidemux/cli/CMakeLists.txt.linking-el6			2015-12-27 23:51:42.164509779 +0100
+@@ -77,6 +77,10 @@
+ 	ADM_gui2Cli6
+ 	ADM_toolkitCli6
+ 	ADM_shellCli
++	ADM_coreSqlLight3
++	ADM_libswscale
++	ADM_libpostproc
++	ADM_libavformat
+ )
+ 
+ ###########################################
+--- avidemux_2.6.10/avidemux/gtk/CMakeLists.txt					2015-06-10 07:42:47.000000000 +0200
++++ avidemux_2.6.10/avidemux/gtk/CMakeLists.txt.linking-el6			2015-12-27 23:54:03.700323372 +0100
+@@ -99,6 +99,10 @@
+ 	ADM_UIGtk6
+ 	ADM_coreAudioDevice6
+         ADM_osSupport6
++	ADM_coreSqlLight3
++	ADM_libswscale
++	ADM_libpostproc
++	ADM_libavformat
+ )
+ 
+ ###########################################
+--- avidemux_2.6.10/avidemux/qt4/ADM_jobs/src/CMakeLists.txt			2015-06-10 07:42:47.000000000 +0200
++++ avidemux_2.6.10/avidemux/qt4/ADM_jobs/src/CMakeLists.txt.linking-el6	2015-12-27 23:52:40.080024420 +0100
+@@ -67,6 +67,10 @@
+ TARGET_LINK_LIBRARIES(avidemux3_jobs_${QT_EXTENSION} ADM_coreJobs)
+ TARGET_LINK_LIBRARIES(avidemux3_jobs_${QT_EXTENSION} ADM_coreUtils6)
+ TARGET_LINK_LIBRARIES(avidemux3_jobs_${QT_EXTENSION} ADM_core6)
++TARGET_LINK_LIBRARIES(avidemux3_jobs_${QT_EXTENSION} ADM_coreSqlLight3)
++TARGET_LINK_LIBRARIES(avidemux3_jobs_${QT_EXTENSION} ADM_coreUI6)
++TARGET_LINK_LIBRARIES(avidemux3_jobs_${QT_EXTENSION} ADM_libavutil)
++TARGET_LINK_LIBRARIES(avidemux3_jobs_${QT_EXTENSION} ADM_libavcodec)
+ #
+ target_link_libraries(avidemux3_jobs_${QT_EXTENSION} "-lm -lstdc++")
+ #
+--- avidemux_2.6.10/avidemux/qt4/CMakeLists.txt					2015-06-10 07:42:47.000000000 +0200
++++ avidemux_2.6.10/avidemux/qt4/CMakeLists.txt.linking-el6			2015-12-27 23:53:24.754649921 +0100
+@@ -124,6 +124,10 @@
+ 	ADM_coreAudio6
+ 	ADM_coreAudioDevice6
+ 	ADM_osSupport6
++	ADM_coreSqlLight3
++	ADM_libswscale
++	ADM_libpostproc
++	ADM_libavformat
+ )
+ 
+ ###########################################

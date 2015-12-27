@@ -1,0 +1,45 @@
+Patch by Robert Scheck <robert@fedoraproject.org> for avidemux >= 2.6.10 to work around build failures on RHEL 6 (and derivates
+such as CentOS 6). RHEL 6 ships Qt 4.6.2 which does not support QImage Class' constScanLine() that was introduced with Qt 4.7, but
+only scanLine(). Without including limits.h the build fails due to undefined INT_MAX constant. QScriptEngine Class in Qt 4.6.2 did
+not contain QScriptEngine::ExcludeSlots constant, was introduced with Qt 4.8 - just removing it seems to work. If this fails at a
+later time, the whole plugin should be disabled (except somebody knows how to work around this missing constant).
+
+--- avidemux_2.6.10/avidemux/qt4/ADM_UIs/src/T_openGL.cpp					2015-06-10 07:42:47.000000000 +0200
++++ avidemux_2.6.10/avidemux/qt4/ADM_UIs/src/T_openGL.cpp.qt46					2015-12-28 00:01:18.631672129 +0100
+@@ -260,7 +260,7 @@
+     int height=image->GetHeight(plane);
+     for(int y=0;y<height;y++)
+     {
+-        const uchar *src=qimg.constScanLine(height-y-1);
++        const uchar *src=qimg.scanLine(height-y-1);
+         if(!src)
+         {
+             ADM_error("Can t get pointer to openGl texture\n");
+@@ -365,7 +365,7 @@
+     // Do Y
+     for(int y=1;y<=height;y++)
+     {
+-        const uchar *src=qimg.constScanLine(height-y);
++        const uchar *src=qimg.scanLine(height-y);
+         
+         
+         if(!src)
+--- avidemux_2.6.10/avidemux_plugins/ADM_scriptEngines/qtScript/src/Editor.cpp			2015-06-10 07:42:47.000000000 +0200
++++ avidemux_2.6.10/avidemux_plugins/ADM_scriptEngines/qtScript/src/Editor.cpp.qt46		2015-12-28 00:02:38.641999589 +0100
+@@ -1,3 +1,5 @@
++#include <limits.h>
++
+ #include "ADM_inttype.h"
+ #include "DIA_coreToolkit.h"
+ 
+--- avidemux_2.6.10/avidemux_plugins/ADM_scriptEngines/qtScript/src/QtScriptEngine.cpp		2015-06-10 07:42:47.000000000 +0200
++++ avidemux_2.6.10/avidemux_plugins/ADM_scriptEngines/qtScript/src/QtScriptEngine.cpp.qt46	2015-12-28 00:02:22.691133687 +0100
+@@ -321,7 +321,7 @@
+         // Register static Editor object
+         Editor* editor = new Editor(engine, this->_editor, muxers, videoEncoders);
+         QScriptValue mainObject = engine->newQObject(
+-                                      editor, QScriptEngine::ScriptOwnership, QScriptEngine::ExcludeSlots);
++                                      editor, QScriptEngine::ScriptOwnership);
+ 
+         this->copyEnumsToScriptObject(engine, &Editor::staticMetaObject, &mainObject);
+         engine->globalObject().setProperty("Editor", mainObject);

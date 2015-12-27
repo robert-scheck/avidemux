@@ -2,7 +2,7 @@
 
 Name:           avidemux
 Version:        2.6.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Graphical video editing and transcoding tool
 
 License:        GPLv2+
@@ -13,6 +13,8 @@ Source1:        avidemux-qt.desktop
 
 Patch0:         avidemux-2.6.10-bundled_libs.patch
 Patch1:         avidemux-2.6.10-qt5_lrelease.patch
+Patch2:         avidemux-2.6.10-linking-el6.patch
+Patch3:         avidemux-2.6.10-qt46.patch
 
 # Don't try to build on arm
 ExcludeArch: %{arm}
@@ -139,6 +141,10 @@ This package contains translation files for %{name}.
 %setup -q -n %{name}_%{version}
 %patch0 -p1
 %patch1 -p1 -b .bund_libs
+%if 0%{?rhel} == 6
+%patch2 -p1 -b .linking-el6
+%patch3 -p1 -b .qt46
+%endif
 
 # Remove sources of bundled libraries.
 rm -rf avidemux_plugins/ADM_audioDecoders/ADM_ad_ac3/ADM_liba52 \
@@ -364,6 +370,9 @@ fi
 
 
 %changelog
+* Sun Dec 27 2015 Robert Scheck <robert@fedoraproject.org> - 2.6.10-4
+- Added patches to allow building on RHEL 6
+
 * Sat Nov 28 2015 Richard Shaw <hobbes1069@gmail.com> - 2.6.10-3
 - Revert back to QT4.
 
